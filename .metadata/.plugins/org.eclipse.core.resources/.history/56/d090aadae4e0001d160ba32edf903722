@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>活動資料</title>
+    <!-- 響應式網站 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Boostrap 導入程式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+    <!-- 連結CSS外部檔案 -->
+    <link rel="stylesheet" href="./css/post.css">
+    <link rel="stylesheet" href="./css/navbar&footer.css">
+    <!-- MDB頭像 -->
+    <script type="text/javascript" src="./Js/mdb.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- 連接Js外部檔案 -->
+    <script src="./Js/index.js"></script>
+    <script>
+        $(function(){
+            $("#activity_btn").on("click",function(){
+                alert("confirm and submit");
+                
+                $.get("./addactivity",{activityTitle:$("#activityTitle").val(),location:$("#location").val()
+                    ,activityTime:$("#activityTime").val(),deadline:$("#deadline").val(),min:$("#min").val()
+                    ,max:$("#max").val(),fee:$("#fee").val(),contact:$("#contact").val(),reservation:$("#reservation").val()
+                    ,level:$("#level").val(),description:$("#description").val()}
+                    ,function(data1,status,jqXHR){
+                    alert("按鈕有觸發發起活動")
+                    console.log("按按鈕有觸發發起活動")
+                    alert(data1);
+                    console.log(data);
+                    console.log(typeof data);
+                    alert(jqXHR.getResponseHeader("Launch Successfully"))
+                    console.log("Launch Successfully:" + jqXHR.getResponseHeader("Launch Successfully"))
+                    sessionStorage.setItem('Launch Successfully',jqXHR.getResponseHeader("Launch Successfully"));
+                    let dataObj = JSON.stringify(data);
+                    sessionStorage.setItem('activity',dataObj);
+                    
+                    console.log(sessionStorage.getItem('activity'));
+                    alert("debug");
+                    window.location.href="./index.html"
+                    
+                })
+            });
+        })
+ 
+        </script>
+
+
+</head>
+
+<body>
+    <!-- 導覽列 -->
+    <header class="main-header">
+        <div class="container">
+            <a href="./index.html" class="Logo">
+                <img src="./Images/logo3.png" alt="Logo" width="30" height="36">
+                <h2>Join</h2>
+            </a>
+            <!-- 導覽列文字 -->
+            <nav class="navbar-text">
+                <a href="./latestNews.html">最新消息</a>
+                <a href="./findGym.html">附近場館</a>
+                <a href="./post.html">發起揪團</a>
+                <a href="./joinTeam.html">加入報團</a>
+            </nav>
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <ul class="navbar-nav">
+                        <!-- Avatar頭像 -->
+                        <li class="nav-item Avatar dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                                id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown"
+                                aria-expanded="false">
+                                <img src="./Images/user.png" class="rounded-circle" width="50" height="50"
+                                    alt="Portrait of a Woman" loading="lazy" />
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li>
+                                    <a class="dropdown-item" href="#">登入</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">個人資訊</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <!-- 揪團框 -->
+    <div class="container-post">
+        <!-- 團名 -->
+        <div class="GroupName" >
+            <input type="text" placeholder="團名 : 活動名稱" style="text-align:center"  id="activityTitle" name="activityTitle" >
+        </div>
+        <!-- 圖 & 文字說明 -->
+        <div class="post-area">
+            <!--Image-->
+            <div class="post-Image">
+                <div class="mb-4 d-flex justify-content-center">
+                    <img src="./Images/logo.png" alt="example placeholder" id="pic" style="width: 600px;height: 400px;" />
+                </div>
+            </div>
+            <!-- 文字表單 -->
+            <div class="formfile">
+                <form action="activity" method="post">
+                    <div>
+                        <label for="location" >活動地點 :</label> 
+                        <input id="location" name="location">
+                    </div>
+                    <div>
+                        <label for="activityTime">活動時間 :</label>
+                        <input type="date" id="activityTime" name="activityTime">
+                    </div>
+                    <div>
+                        <label for="deadline">報名截止 :</label>
+                        <input type="date" id="deadline" name="deadline" >
+                    </div>
+                    <div>
+                        <label for="min">最低人數 :</label>
+                        <input id="min" name="min">
+                    </div>
+                    <div>
+                        <label for="max">上限人數 :</label>
+                        <input id="max" name="max">
+                    </div>
+                    <div>
+                        <label for="fee">活動費用 :</label>
+                        <input id="fee" name="fee">
+                    </div>
+                    <div>
+                        <label for="contact">聯絡方式 :</label>
+                        <input id="contact" name="contact">
+                    </div>
+                    <div>
+                        <label for="reservation">場地預約 :</label>
+                        <input type="radio" id="reservation" name="reservation">
+                        <label for="reservation">已預約</label>
+                        <input type="radio" id="reservation" name="reservation">
+                        <label for="reservation">未預約</label>
+                    </div>
+                    <div>
+                        <label for="level">等級推薦 :</label>
+                        <input type="checkbox" id="level" name="level">
+                        <label for="level">初級</label>
+                        <input type="checkbox" id="level" name="level">
+                        <label for="level">中級</label>
+                        <input type="checkbox" id="level" name="level">
+                        <label for="level">高級</label>
+                        <input type="checkbox" id="level" name="level">
+                        <label for="level">專業</label>
+                    </div>
+                    <br>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">活動說明 :</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>       
+                </form>
+            </div>
+            	<div class="activity-btn">
+               		<div><button type="submit" id="activity_btn">發起活動</button></div>
+           		</div>    
+           </div>
+                  
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,148 @@
+package tw.badminton.eeit58;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Properties;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
+
+import tw.badminton.api.Activity;
+
+
+@WebServlet("/addactivity")
+public class addactivity extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    private final static String USER = "root";
+	private final static String PASSWORD = "root";
+	private final static String URL = "jdbc:mysql://localhost/eeit58group3";
+	private final static String SQL_QUERY = "SELECT * FROM activity WHERE host=?";
+	private Connection conn;
+	private Activity activity;
+	private JSONObject json;
+
+	public addactivity() {	
+		
+		try {
+			//連接資料庫
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Properties prop = new Properties();
+			prop.put("user", USER);
+			prop.put("password", PASSWORD);
+			conn =  DriverManager.getConnection(URL,prop);
+			System.out.println("OK");
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+    }
+
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
+		System.out.println("Activity doGet");
+		doPost(request, response);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//doGet(request, response);
+		request.setCharacterEncoding("UTF-8");
+		//response.setContentType("text/html;charset=UTF-8");
+		
+		//取得會員登入ID
+        //Member member1 = (Member) (request.getSession().getAttribute("member"));
+        System.out.println("get member ID"); //member1.getID()       
+        
+        
+		if(true) { //member1.getID()!= null
+			System.out.println("member exists");
+			
+			activity = new Activity();
+			//將 memeber id 送到 activity host 資料表會自動鏈接
+			//先假設Host為1(member id=1)
+			activity.setHost("1"); //member1.getID()
+			//從前端獲得host
+			String host = request.getParameter("host");
+			
+			try {	
+				PreparedStatement pstmt = conn.prepareStatement(SQL_QUERY);
+				pstmt.setString(1,activity.getHost());
+				ResultSet rs = pstmt.executeQuery();
+				
+				//確定有資料
+				if(rs.next()){
+					System.out.println("有找到Host");		
+					Activity activity = new Activity();
+					activity.setId(rs.getString("id"));
+					activity.setHost(rs.getString("host"));
+					activity.setActivityTitle(rs.getString("activityTitle"));
+					activity.setDescription(rs.getString("description"));
+					activity.setLocation(rs.getString("location"));
+					activity.setActivityTime(rs.getString("activityTime"));
+					activity.setFee(rs.getString("fee"));
+					activity.setMin(rs.getString("min"));
+					activity.setMax(rs.getString("max"));
+					activity.setReservation(rs.getString("reservation"));
+					activity.setContact(rs.getString("contact"));
+					activity.setLevel(rs.getString("level"));
+					activity.setParticipation(rs.getString("participation"));
+					activity.setExpired(rs.getString("expired"));
+					activity.setPosttime(rs.getString("postTime"));
+					activity.setPic(rs.getString("pic"));
+					activity.setDeadline(rs.getString("deadline"));
+					
+					request.getSession().setAttribute("activity", activity);
+					//1天后自動失效
+					request.getSession().setMaxInactiveInterval(1*24*60*60);
+									
+					response.setCharacterEncoding("UTF-8");
+					response.setContentType("application/json");					
+					json = new JSONObject();
+					json.put("id", activity.getId());
+					json.put("host", activity.getHost());
+					json.put("activityTitle", activity.getActivityTitle());
+					json.put("description", activity.getDescription());
+					json.put("location", activity.getLocation());
+					json.put("activityTime", activity.getActivityTime());
+					json.put("fee", activity.getFee());
+					json.put("min", activity.getMin());
+					json.put("max", activity.getMax());
+					json.put("reservation", activity.getReservation());
+					json.put("contact", activity.getContact());
+					json.put("level", activity.getLevel());
+					json.put("participation", activity.getParticipation());
+					json.put("expired", activity.getExpired());
+					json.put("postTime", activity.getPosttime());
+					json.put("pic", activity.getPic());
+					json.put("deadline", activity.getDeadline());
+					
+					response.addHeader("LaunchSuccessfully","1");					
+					//按下報團，送回首頁
+					//response.sendRedirect("index.html");	
+			
+				}else {
+					System.out.println("沒有找到Host");
+					request.getSession().invalidate();
+					response.addHeader("LaunchSuccessfully","0");
+				}
+				
+				response.getWriter().print(json);
+				System.out.println("發起活動成功，並送出json");
+				
+			}catch(Exception e) {
+				System.out.println("連線失敗400");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			}
+//		}else {	
+//			response.sendRedirect("login.html");
+				}
+		}
+	}
